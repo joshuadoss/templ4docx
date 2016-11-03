@@ -1,10 +1,13 @@
 package pl.jsolve.templ4docx.extractor;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.xwpf.usermodel.XWPFDocument;
+import org.apache.poi.xwpf.usermodel.XWPFFooter;
+import org.apache.poi.xwpf.usermodel.XWPFHeader;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
@@ -172,4 +175,29 @@ public class VariableFinder {
         insertStrategyChooser.cleanUp();
     }
 
+	public Collection<? extends Insert> find(XWPFHeader header, Variables variables) {
+        List<Insert> inserts = Collections.newArrayList();
+        List<Key> keys = keyExtractor.extractKeys(variables);
+        for (XWPFParagraph paragraph : header.getParagraphs()) {
+            inserts.addAll(find(paragraph, null, null, keys));
+        }
+
+        findInTables(inserts, header.getTables(), keys);
+
+        mergeTableInserts(inserts, variables);
+        return inserts;
+    }
+
+    public Collection<? extends Insert> find(XWPFFooter footer, Variables variables) {
+        List<Insert> inserts = Collections.newArrayList();
+        List<Key> keys = keyExtractor.extractKeys(variables);
+        for (XWPFParagraph paragraph : footer.getParagraphs()) {
+            inserts.addAll(find(paragraph, null, null, keys));
+        }
+
+        findInTables(inserts, footer.getTables(), keys);
+
+        mergeTableInserts(inserts, variables);
+        return inserts;
+    }
 }

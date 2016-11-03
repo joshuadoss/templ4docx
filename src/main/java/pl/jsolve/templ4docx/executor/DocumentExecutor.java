@@ -2,6 +2,9 @@ package pl.jsolve.templ4docx.executor;
 
 import java.util.List;
 
+import org.apache.poi.xwpf.usermodel.XWPFFooter;
+import org.apache.poi.xwpf.usermodel.XWPFHeader;
+
 import pl.jsolve.templ4docx.core.Docx;
 import pl.jsolve.templ4docx.extractor.VariableFinder;
 import pl.jsolve.templ4docx.insert.Insert;
@@ -28,6 +31,15 @@ public class DocumentExecutor {
      */
     public void execute(Docx docx) {
         List<Insert> inserts = variableFinder.find(docx.getXWPFDocument(), variables);
+        
+        for (XWPFHeader header : docx.getXWPFDocument().getHeaderList()) {
+            inserts.addAll(variableFinder.find(header, variables));
+        }
+        
+        for (XWPFFooter footer : docx.getXWPFDocument().getFooterList()) {
+            inserts.addAll(variableFinder.find(footer, variables));
+        }
+        
         variableFinder.replace(inserts);
     }
 

@@ -3,6 +3,8 @@ package pl.jsolve.templ4docx.cleaner;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.xwpf.usermodel.XWPFFooter;
+import org.apache.poi.xwpf.usermodel.XWPFHeader;
 import org.apache.poi.xwpf.usermodel.XWPFParagraph;
 import org.apache.poi.xwpf.usermodel.XWPFRun;
 import org.apache.poi.xwpf.usermodel.XWPFTable;
@@ -39,8 +41,21 @@ public class DocumentCleaner {
         for (XWPFParagraph paragraph : docx.getXWPFDocument().getParagraphs()) {
             clean(paragraph.getRuns(), keys, variablePattern);
         }
-
         cleanTables(docx.getXWPFDocument().getTables(), keys, variablePattern);
+        
+        for (XWPFHeader header : docx.getXWPFDocument().getHeaderList()) {
+            for (XWPFParagraph paragraph : header.getParagraphs()) {
+                clean(paragraph.getRuns(), keys, variablePattern);
+            }
+            cleanTables(header.getTables(), keys, variablePattern);
+        }
+        
+        for (XWPFFooter footer : docx.getXWPFDocument().getFooterList()) {
+            for (XWPFParagraph paragraph : footer.getParagraphs()) {
+                clean(paragraph.getRuns(), keys, variablePattern);
+            }
+            cleanTables(footer.getTables(), keys, variablePattern);
+        }
     }
 
     /**
